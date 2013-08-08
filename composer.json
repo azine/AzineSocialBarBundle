@@ -1,0 +1,26 @@
+{
+    "name": "azine/socialbar-bundle",
+    "type": "symfony-bundle",
+    "description": "Bundle to easily add a social-bar to your pages ",
+    "keywords": ["social bar", "social", "share", "share button", "like", "like button"],
+    "homepage": "https://github.com/azine/AzineSocialBarBundle.git",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Azine IT Services AG",
+            "email": "github@azine-it.ch"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "ext-geoip" : "*"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1"
+    },
+    "autoload": {
+        "psr-0": { "Azine\\SocialBarBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Azine/SocialBarBundle"
+}
