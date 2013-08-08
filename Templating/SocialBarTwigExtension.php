@@ -27,6 +27,8 @@ class SocialBarTwigExtension extends \Twig_Extension{
         'facebookButton' => new \Twig_Function_Method($this, 'getFacebookLikeButton' ,array('is_safe' => array('html'))),
         'twitterButton' => new \Twig_Function_Method($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
         'googlePlusButton' => new \Twig_Function_Method($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
+        'xingButton' => new \Twig_Function_Method($this, 'getXingButton' ,array('is_safe' => array('html'))),
+        'linkedInButton' => new \Twig_Function_Method($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
       );
     }
 
@@ -63,7 +65,24 @@ class SocialBarTwigExtension extends \Twig_Extension{
         $render_parameters['googleplus'] = false;
       }
 
-      // get the helper service and display the template
+      if (!array_key_exists('xing', $parameters)){
+      	$render_parameters['xing'] = array();
+      }else if(is_array($parameters['xing'])){
+      	$render_parameters['xing'] = $parameters['xing'];
+      }else{
+      	$render_parameters['xing'] = false;
+      }
+
+
+      if (!array_key_exists('linkedin', $parameters)){
+      	$render_parameters['linkedin'] = array();
+      }else if(is_array($parameters['linkedin'])){
+      	$render_parameters['linkedin'] = $parameters['linkedin'];
+      }else{
+      	$render_parameters['linkedin'] = false;
+      }
+
+     // get the helper service and display the template
       return $this->container->get('azine.socialBarHelper')->socialButtons($render_parameters);
     }
 
@@ -120,8 +139,30 @@ class SocialBarTwigExtension extends \Twig_Extension{
             'size' => 'medium',
             'annotation' => 'bubble',
             'width' => '300',
+			'height' => '20',
+       		'rel'	=> 'author',
+       		'action' => 'g-plusone', // g-follow
         );
 
        return $this->container->get('azine.socialBarHelper')->googlePlusButton($parameters);
+    }
+
+    public function getLinkedInButton($parameters = array()){
+    	$parameters = $parameters + array(
+			'action'  => 'IN/FollowCompany',
+			'locale' => 'en',
+			'companyId' => 2811461,
+    		'counterLocation' => 'right', // top
+    	);
+    	return $this->container->get('azine.socialBarHelper')->linkedInButton($parameters);
+    }
+
+    public function getXingButton($parameters = array()){
+    	$parameters = $parameters + array(
+            'locale' => 'en',
+    		'action' => 'XING/Share',
+    		'counterLocation' => 'right', // top
+    	);
+    	return $this->container->get('azine.socialBarHelper')->xingButton($parameters);
     }
 }

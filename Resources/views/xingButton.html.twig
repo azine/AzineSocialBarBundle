@@ -1,0 +1,17 @@
+{% if url is not defined or url == null %}
+    {% set url = app.request.uri %}
+{% endif %}
+
+{% spaceless %}
+<div class="social-button xingButton">
+	<div data-type="{{ action }}" data-counter="{{ counterLocation }}"></div>
+	<script>
+	;(function (d, s) {
+	    var x = d.createElement(s),
+	    s = d.getElementsByTagName(s)[0];
+	    x.src = "https://www.xing-share.com/js/external/share.js";
+	    s.parentNode.insertBefore(x, s);
+	    })(document, "script");
+	</script>
+</div>
+{% endspaceless %}

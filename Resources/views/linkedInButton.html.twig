@@ -1,0 +1,13 @@
+{% if url is not defined or url == null %}
+    {% set url = app.request.uri %}
+{% endif %}
+
+{% spaceless %}
+<div class="social-button linkedinButton">
+	<div><script type="{{ action }}" data-id="{{ companyId }}" data-counter="{{ counterLocation }}"></script></div>
+	<script src="//platform.linkedin.com/in.js" type="text/javascript">
+		 lang: {{ locale }}
+	</script>
+</div>
+
+{% endspaceless %}

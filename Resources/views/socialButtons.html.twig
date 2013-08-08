@@ -1,9 +1,31 @@
+<style>
+<!--
+.social-bar{
+    display: inline-block;
+    display: -moz-inline-box;
+    *display: inline; /* For IE7 */
+    zoom: 1; /* Trigger hasLayout */
+    text-align: center;
+}
+.social-button{
+	float: left;
+}
+-->
+</style>
+<div class="social-bar">
 {% if facebook is not sameas(false) %}
-	<div class="button facebookButton">{{ facebookButton(facebook) }}</div>
+	{{ facebookButton(facebook) }}
 {% endif %}
 {% if googleplus is not sameas(false) %}
-	<div class="button googleplus">{{ googlePlusButton(googleplus) }}</div>
+	{{ googlePlusButton(googleplus) }}
 {% endif %}
 {% if twitter is not sameas(false) %}
-	<div class="button twitterButton"> {{ twitterButton(twitter) }} </div>
+	{{ twitterButton(twitter) }}
 {% endif %}
+{% if xing is not sameas(false) %}
+	{{ xingButton(xing) }}
+{% endif %}
+{% if linkedin is not sameas(false) %}
+	{{ linkedInButton(linkedin) }}
+{% endif %}
+</div>
