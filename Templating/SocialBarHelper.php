@@ -11,7 +11,6 @@ class SocialBarHelper extends Helper{
         $this->templating  = $templating;
     }
 
-
     public function socialButtons($parameters){
       return $this->templating->render('AzineSocialBarBundle::socialButtons.html.twig', $parameters);
     }

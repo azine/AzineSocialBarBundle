@@ -20,27 +20,15 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('azine_social_bar');
 
-//         $rootNode
-//         	->children()
-// 	        	->booleanNode	("enabled")						->defaultTrue()->info("true|false : turn the whole bundle on/off")->end()
-// 	        	->scalarNode	('access_denied_view')			->defaultValue('AzineGeoBlockingBundle::accessDenied.html.twig')->info("the view to be rendered as 'blocked' page")->end()
-// 	        	->booleanNode	('block_anonymouse_users_only')	->defaultTrue()->info("block all users or only users that are not logged in yet")->end()
-// 	        	->scalarNode	('login_route')					->defaultValue('fos_user_security_login')->info("route name to the login-form (only relevant if block_anonymouse_users_only is set to true)")->end()
-// 	        	->scalarNode	('lookup_adapter')				->defaultValue('azine_geo_blocking.lookup.adapter')->info("id of the lookup-adapter you would like to use")->end()
-// 	        	->booleanNode	('allow_private_ips')			->defaultTrue()->info("true | false : also applie the rules to private IPs e.g. 127.0.0.1 or 192.168.xxx.yyy etc.")->end()
-// 	        	->arrayNode		('countries')->info("only whitelist or blacklist can contain values.")->addDefaultsIfNotSet()
-// 		        	->children()
-// 		        		->variableNode('whitelist')->defaultValue(array())->info("e.g. 'CH','FR','DE' etc. => access is allowed to visitors from these countries")->end()
-// 		        		->variableNode('blacklist')->defaultValue(array())->info("e.g. 'US','CN' etc. => access is denied to visitors from these countries")->end()
-// 	        		->end()
-// 	        	->end()// end countries
-// 	        	->arrayNode		('routes')->info("only whitelist or blacklist can contain values.")->addDefaultsIfNotSet()
-// 		        	->children()
-// 		        		->variableNode('whitelist')->defaultValue(array('fos_user_security_login', 'fos_user_security_login_check', 'fos_user_security_logout'))->info("list of routes, that never should be blocked for access from unliked locations (e.g. the login-routes).")->cannotBeEmpty()->end()
-// 		        		->variableNode('blacklist')->defaultValue(array())->info("list of routes, that always should be blocked for access from unliked locations.")->end()
-// 	        		->end()
-// 	        	->end()// end routes
-// 	        ->end();
+        $rootNode
+        	->children()
+	        	->scalarNode(AzineSocialBarExtension::FB_PROFILE)->info("the url to you Facebook profile")->end()
+	        	->scalarNode(AzineSocialBarExtension::GOOGLE_PLUS_PROFILE)->info("the url to your Google+ profile")->end()
+	        	->scalarNode(AzineSocialBarExtension::XING_PROFILE)->info("the url to your xing profile")->end()
+	        	->scalarNode(AzineSocialBarExtension::LINKED_IN_PROFILE)->info("your profile-id => get it here http://developer.linkedin.com/plugins")->end()
+	        	->scalarNode(AzineSocialBarExtension::TWITTER_PROFILE)->info("your twitter username")->end()
+	        	->end();
+
 
         return $treeBuilder;
     }

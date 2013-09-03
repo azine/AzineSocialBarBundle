@@ -4,11 +4,12 @@
 
 {% spaceless %}
 <div class="social-button twitterButton">
-	<a	href="https://twitter.com/share"
-		class="twitter-share-button"
+	<a	href="https://twitter.com/{{ action }}"
+		class="{{ actionClass }}"
 		data-text="{{message}}"
 		data-url="{{url}}"
 		data-lang="{{locale}}"
+		data-show-screen-name="false"
 
 	    {% if via is not sameas(false) %}
 	    data-via="{{via}}"

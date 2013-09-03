@@ -4,7 +4,11 @@
 
 {% spaceless %}
 <div class="social-button xingButton">
-	<div data-type="{{ action }}" data-counter="{{ counterLocation }}"></div>
+	<div
+		data-type="{{ action }}"
+		data-counter="{{ counterLocation }}"
+		data-url="{{ url }}"
+	></div>
 	<script>
 	;(function (d, s) {
 	    var x = d.createElement(s),

@@ -14,18 +14,18 @@
 </style>
 <div class="social-bar">
 {% if facebook is not sameas(false) %}
-	{{ facebookButton(facebook) }}
+	{{ facebookButton(facebook, action) }}
 {% endif %}
 {% if googleplus is not sameas(false) %}
-	{{ googlePlusButton(googleplus) }}
+	{{ googlePlusButton(googleplus, action) }}
 {% endif %}
 {% if twitter is not sameas(false) %}
-	{{ twitterButton(twitter) }}
+	{{ twitterButton(twitter, action) }}
 {% endif %}
 {% if xing is not sameas(false) %}
-	{{ xingButton(xing) }}
+	{{ xingButton(xing, action) }}
 {% endif %}
 {% if linkedin is not sameas(false) %}
-	{{ linkedInButton(linkedin) }}
+	{{ linkedInButton(linkedin, action) }}
 {% endif %}
 </div>

@@ -4,7 +4,16 @@
 
 {% spaceless %}
 <div class="social-button linkedinButton">
-	<div><script type="{{ action }}" data-id="{{ companyId }}" data-counter="{{ counterLocation }}"></script></div>
+	<div><script
+		type="{{ action }}"
+		data-counter="{{ counterLocation }}"
+		{% if companyId is defined %}
+		data-id="{{ companyId }}"
+		{% else %}
+		data-url="{{ url }}"
+		{% endif %}
+		></script>
+	</div>
 	<script src="//platform.linkedin.com/in.js" type="text/javascript">
 		 lang: {{ locale }}
 	</script>
