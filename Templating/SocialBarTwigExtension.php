@@ -94,6 +94,9 @@ class SocialBarTwigExtension extends \Twig_Extension{
 		}
 
 		$render_parameters['action'] = $action;
+		$render_parameters['width'] = 130;
+		$render_parameters['height'] = 20;
+
 
 	 // get the helper service and display the template
 		return $this->container->get('azine.socialBarHelper')->socialButtons($render_parameters);
@@ -109,7 +112,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 		$parameters = $parameters + array(
 			'locale' => 'en_US',
 			'send' => false,
-			'width' => 300,
+			'width' => 130,
 			'showFaces' => false,
 			'layout' => 'button_count',
 			);
@@ -168,8 +171,8 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			'locale' => 'en',
 			'size' => 'medium',
 			'annotation' => 'bubble',
-			'width' => '300',
-			'height' => '20',
+			'width' => 130,
+			'height' => 20,
 		);
 
 		if($action == "share"){

@@ -1,14 +1,32 @@
 <style>
 <!--
-.social-bar{
-    display: inline-block;
-    display: -moz-inline-box;
-    *display: inline; /* For IE7 */
-    zoom: 1; /* Trigger hasLayout */
-    text-align: center;
+@media only screen and (min-width: 768px) {
+	.social-bar{
+	    display: inline-block;
+	    display: -moz-inline-box;
+	    *display: inline; /* For IE7 */
+	    zoom: 1; /* Trigger hasLayout */
+	}
+	.social-button{
+		float: left;
+		width: {{ width }}px;
+		max-width: {{ width }}px;
+		height: {{ height }}px;
+		overflow: hidden;
+	}
 }
-.social-button{
-	float: left;
+@media only screen and (max-width: 767px) {
+	.social-bar{
+	    *display: inline; /* For IE7 */
+	    zoom: 1; /* Trigger hasLayout */
+	}
+	.social-button{
+		margin: 10px 0;
+		height: {{ height }}px;
+		width: {{ width }}px;
+		max-width: {{ width }}px;
+		background: red;
+	}
 }
 -->
 </style>
@@ -19,13 +37,13 @@
 {% if googleplus is not sameas(false) %}
 	{{ googlePlusButton(googleplus, action) }}
 {% endif %}
+{% if linkedin is not sameas(false) %}
+	{{ linkedInButton(linkedin, action) }}
+{% endif %}
 {% if twitter is not sameas(false) %}
 	{{ twitterButton(twitter, action) }}
 {% endif %}
 {% if xing is not sameas(false) %}
 	{{ xingButton(xing, action) }}
-{% endif %}
-{% if linkedin is not sameas(false) %}
-	{{ linkedInButton(linkedin, action) }}
 {% endif %}
 </div>
