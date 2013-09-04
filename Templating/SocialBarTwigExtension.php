@@ -12,21 +12,18 @@ class SocialBarTwigExtension extends \Twig_Extension{
 	 *
 	 * @param ContainerInterface $container
 	 */
-	public function __construct(ContainerInterface $container)
-	{
+	public function __construct(ContainerInterface $container){
 		$this->container = $container;
 	}
 
-	public function getName()
-	{
+	public function getName(){
 		return 'azine_social_bar';
 	}
 
-	public function getFunctions()
-	{
+	public function getFunctions(){
 		return array(
 		'socialButtons' => new \Twig_Function_Method($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
-		'facebookButton' => new \Twig_Function_Method($this, 'getFacebookLikeButton' ,array('is_safe' => array('html'))),
+		'facebookButton' => new \Twig_Function_Method($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
 		'twitterButton' => new \Twig_Function_Method($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
 		'googlePlusButton' => new \Twig_Function_Method($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
 		'xingButton' => new \Twig_Function_Method($this, 'getXingButton' ,array('is_safe' => array('html'))),
@@ -107,7 +104,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 	 * => https://developers.facebook.com/docs/reference/plugins/like/
 	 * @param array $parameters
 	 */
-	public function getFacebookLikeButton($parameters = array(), $action = "share"){
+	public function getFacebookButton($parameters = array(), $action = "share"){
 		// default values, you can override the values by setting them
 		$parameters = $parameters + array(
 			'locale' => 'en_US',

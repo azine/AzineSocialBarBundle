@@ -29,11 +29,21 @@ class AzineSocialBarExtension extends Extension{
 		$configuration = new Configuration();
 		$config = $this->processConfiguration($configuration, $configs);
 
-		$container->setParameter(self::PREFIX.self::FB_PROFILE, $config[self::FB_PROFILE]);
-		$container->setParameter(self::PREFIX.self::XING_PROFILE, $config[self::XING_PROFILE]);
-		$container->setParameter(self::PREFIX.self::LINKED_IN_PROFILE, $config[self::LINKED_IN_PROFILE]);
-		$container->setParameter(self::PREFIX.self::GOOGLE_PLUS_PROFILE, $config[self::GOOGLE_PLUS_PROFILE]);
-		$container->setParameter(self::PREFIX.self::TWITTER_PROFILE, $config[self::TWITTER_PROFILE]);
+		if(array_key_exists(self::FB_PROFILE, $config))
+			$container->setParameter(self::PREFIX.self::FB_PROFILE, $config[self::FB_PROFILE]);
+
+		if(array_key_exists(self::XING_PROFILE, $config))
+			$container->setParameter(self::PREFIX.self::XING_PROFILE, $config[self::XING_PROFILE]);
+
+		if(array_key_exists(self::LINKED_IN_PROFILE, $config))
+			$container->setParameter(self::PREFIX.self::LINKED_IN_PROFILE, $config[self::LINKED_IN_PROFILE]);
+
+		if(array_key_exists(self::GOOGLE_PLUS_PROFILE, $config))
+			$container->setParameter(self::PREFIX.self::GOOGLE_PLUS_PROFILE, $config[self::GOOGLE_PLUS_PROFILE]);
+
+		if(array_key_exists(self::TWITTER_PROFILE, $config))
+			$container->setParameter(self::PREFIX.self::TWITTER_PROFILE, $config[self::TWITTER_PROFILE]);
+
 
 		$loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
