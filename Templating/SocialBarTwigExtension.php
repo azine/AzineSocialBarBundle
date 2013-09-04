@@ -123,7 +123,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$parameters['action'] = "fb-follow";
 
 		} else {
-			throw \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+			throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
 		}
 
 		return $this->container->get('azine.socialBarHelper')->facebookButton($parameters);
@@ -152,7 +152,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$parameters['action'] = $this->container->getParameter("azine_social_bar_twitter_username");
 
 		} else {
-			throw \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+			throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
 		}
 
 		return $this->container->get('azine.socialBarHelper')->twitterButton($parameters);
@@ -183,7 +183,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$parameters['action'] = "g-follow";
 
 		} else {
-			throw \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+			throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
 		}
 
 		return $this->container->get('azine.socialBarHelper')->googlePlusButton($parameters);
@@ -204,7 +204,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$parameters['companyId'] = $this->container->getParameter("azine_social_bar_linked_in_company_id");
 
 		} else {
-			throw \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+			throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
 		}
 
 		return $this->container->get('azine.socialBarHelper')->linkedInButton($parameters);
@@ -222,7 +222,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 		} else if ($action == "follow"){
 			$parameters['url'] = $this->container->getParameter("azine_social_bar_xing_profile_url");
 		} else {
-			throw \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+			throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
 		}
 
 		return $this->container->get('azine.socialBarHelper')->xingButton($parameters);

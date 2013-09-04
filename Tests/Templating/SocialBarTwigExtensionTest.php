@@ -162,6 +162,17 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 		$socialBarExt->getFacebookButton($inputRenderingParams, $action);
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGetFacebookButton_invalidAction(){
+		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
+		$socialBarExt = new SocialBarTwigExtension($containerMock);
+		$socialBarExt->getFacebookButton(array(), "invalid");
+
+	}
+
+
 	public function testGetTwitterButton_follow(){
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
 		$helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
@@ -213,7 +224,17 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 		$socialBarExt->getTwitterButton($inputRenderingParams, $action);
 	}
 
- 	public function testGetGooglePlusButton_follow(){
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGetTwitterButton_invalidAction(){
+		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
+		$socialBarExt = new SocialBarTwigExtension($containerMock);
+		$socialBarExt->getTwitterButton(array(), "invalid");
+
+	}
+
+	public function testGetGooglePlusButton_follow(){
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
 		$helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
@@ -271,6 +292,16 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGetGooglePlusButton_invalidAction(){
+		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
+		$socialBarExt = new SocialBarTwigExtension($containerMock);
+		$socialBarExt->getGooglePlusButton(array(), "invalid");
+
+	}
+
 	public function testGetLinkedInButton_follow(){
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
 		$helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
@@ -317,6 +348,15 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 
 	}
 
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGetLinkedInButton_invalidAction(){
+		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
+		$socialBarExt = new SocialBarTwigExtension($containerMock);
+		$socialBarExt->getLinkedInButton(array(), "invalid");
+
+	}
 
 	public function testGetXingButton_follow(){
 		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
@@ -363,4 +403,15 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 		$socialBarExt->getXingButton($inputRenderingParams, $action);
 
 	}
+
+	/**
+	 * @expectedException \Exception
+	 */
+	public function testGetXingButton_invalidAction(){
+		$containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
+		$socialBarExt = new SocialBarTwigExtension($containerMock);
+		$socialBarExt->getXingButton(array(), "invalid");
+
+	}
+
 }

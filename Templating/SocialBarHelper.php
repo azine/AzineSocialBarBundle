@@ -3,7 +3,10 @@ namespace Azine\SocialBarBundle\Templating;
 
 use Symfony\Component\Templating\Helper\Helper;
 use Symfony\Component\Templating\EngineInterface;
-
+/**
+ *
+ * @codeCoverageIgnoreStart
+ */
 class SocialBarHelper extends Helper{
     protected $templating;
 
