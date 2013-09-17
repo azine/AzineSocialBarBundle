@@ -36,13 +36,20 @@ class SocialBarTwigExtension extends \Twig_Extension{
 	 * @param unknown_type $parameters
 	 */
 	public function getSocialButtons($parameters = array(), $action = "share"){
+		$commonParams = $parameters;
+		if(array_key_exists('facebook', $commonParams)) unset($commonParams['facebook']);
+		if(array_key_exists('twitter', $commonParams)) unset($commonParams['twitter']);
+		if(array_key_exists('googleplus', $commonParams)) unset($commonParams['googleplus']);
+		if(array_key_exists('xing', $commonParams)) unset($commonParams['xing']);
+		if(array_key_exists('linkedin', $commonParams)) unset($commonParams['linkedin']);
+
 		// no parameters were defined, keeps default values
 		if (!array_key_exists('facebook', $parameters)){
 			$render_parameters['facebook'] = $parameters;
 
 			// parameters are defined, overrides default values
 		} else if(is_array($parameters['facebook'])){
-			$render_parameters['facebook'] = array_merge($parameters, $parameters['facebook']);
+			$render_parameters['facebook'] = array_merge($commonParams, $parameters['facebook']);
 
 		// the button is not displayed
 		} else {
@@ -53,7 +60,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$render_parameters['twitter'] = $parameters;
 
 		} else if(is_array($parameters['twitter'])){
-			$render_parameters['twitter'] = array_merge($parameters, $parameters['twitter']);
+			$render_parameters['twitter'] = array_merge($commonParams, $parameters['twitter']);
 
 		} else {
 			$render_parameters['twitter'] = false;
@@ -63,7 +70,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$render_parameters['googleplus'] = $parameters;
 
 		} else if(is_array($parameters['googleplus'])){
-			$render_parameters['googleplus'] = array_merge($parameters, $parameters['googleplus']);
+			$render_parameters['googleplus'] = array_merge($commonParams, $parameters['googleplus']);
 
 		} else {
 			$render_parameters['googleplus'] = false;
@@ -73,7 +80,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$render_parameters['xing'] = $parameters;
 
 		} else if(is_array($parameters['xing'])){
-			$render_parameters['xing'] = array_merge($parameters, $parameters['xing']);
+			$render_parameters['xing'] = array_merge($commonParams, $parameters['xing']);
 
 		} else {
 			$render_parameters['xing'] = false;
@@ -84,7 +91,7 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			$render_parameters['linkedin'] = $parameters;
 
 		} else if(is_array($parameters['linkedin'])){
-			$render_parameters['linkedin'] = array_merge($parameters, $parameters['linkedin']);
+			$render_parameters['linkedin'] = array_merge($commonParams, $parameters['linkedin']);
 
 		} else {
 			$render_parameters['linkedin'] = false;

@@ -186,13 +186,13 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 											'actionClass' => "twitter-follow-button",
 										    'message' => 'I want to share that page with you',
 										    'text' => 'Tweet',
-										    'via' => 'The Acme team',
-										    'tag' => 'ttot',
+										    'via' => $twitterUserName,
+										    'tag' => $twitterUserName,
 										);
 
 		$helperMock->expects($this->once())->method("twitterButton")->with($expectedRenderingParams);
 		$containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-		$containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_twitter_username")->will($this->returnValue($twitterUserName));
+		$containerMock->expects($this->exactly(3))->method("getParameter")->with("azine_social_bar_twitter_username")->will($this->returnValue($twitterUserName));
 
 
  		$socialBarExt = new SocialBarTwigExtension($containerMock);
@@ -205,20 +205,20 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase{
 
 		$action = 'share';
 		$someUrl = "http://some.fb.url";
-		$inputRenderingParams = array('url' => $someUrl);
+		$inputRenderingParams = array('url' => $someUrl, 'tag' => 'someTag');
 		$expectedRenderingParams = array(	'locale' => 'en',
 											'url' => $someUrl,
 											'action' => "share",
 											'actionClass' => "twitter-share-button",
 										    'message' => 'I want to share that page with you',
 										    'text' => 'Tweet',
-										    'via' => 'The Acme team',
-										    'tag' => 'ttot',
+										    'via' => 'azine team',
+										    'tag' => 'someTag',
 										);
 
 		$helperMock->expects($this->once())->method("twitterButton")->with($expectedRenderingParams);
 		$containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-		$containerMock->expects($this->never())->method("getParameter");
+		$containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_twitter_username")->will($this->returnValue('azine team'));
 
 		$socialBarExt = new SocialBarTwigExtension($containerMock);
 		$socialBarExt->getTwitterButton($inputRenderingParams, $action);
