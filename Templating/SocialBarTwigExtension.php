@@ -38,11 +38,11 @@ class SocialBarTwigExtension extends \Twig_Extension{
 	public function getSocialButtons($parameters = array(), $action = "share"){
 		// no parameters were defined, keeps default values
 		if (!array_key_exists('facebook', $parameters)){
-			$render_parameters['facebook'] = array();
+			$render_parameters['facebook'] = $parameters;
 
 			// parameters are defined, overrides default values
 		} else if(is_array($parameters['facebook'])){
-			$render_parameters['facebook'] = $parameters['facebook'];
+			$render_parameters['facebook'] = array_merge($parameters, $parameters['facebook']);
 
 		// the button is not displayed
 		} else {
@@ -50,30 +50,30 @@ class SocialBarTwigExtension extends \Twig_Extension{
 		}
 
 		if (!array_key_exists('twitter', $parameters)){
-			$render_parameters['twitter'] = array();
+			$render_parameters['twitter'] = $parameters;
 
 		} else if(is_array($parameters['twitter'])){
-			$render_parameters['twitter'] = $parameters['twitter'];
+			$render_parameters['twitter'] = array_merge($parameters, $parameters['twitter']);
 
 		} else {
 			$render_parameters['twitter'] = false;
 		}
 
 		if (!array_key_exists('googleplus', $parameters)){
-			$render_parameters['googleplus'] = array();
+			$render_parameters['googleplus'] = $parameters;
 
 		} else if(is_array($parameters['googleplus'])){
-			$render_parameters['googleplus'] = $parameters['googleplus'];
+			$render_parameters['googleplus'] = array_merge($parameters, $parameters['googleplus']);
 
 		} else {
 			$render_parameters['googleplus'] = false;
 		}
 
 		if (!array_key_exists('xing', $parameters)){
-			$render_parameters['xing'] = array();
+			$render_parameters['xing'] = $parameters;
 
 		} else if(is_array($parameters['xing'])){
-			$render_parameters['xing'] = $parameters['xing'];
+			$render_parameters['xing'] = array_merge($parameters, $parameters['xing']);
 
 		} else {
 			$render_parameters['xing'] = false;
@@ -81,10 +81,10 @@ class SocialBarTwigExtension extends \Twig_Extension{
 
 
 		if (!array_key_exists('linkedin', $parameters)){
-			$render_parameters['linkedin'] = array();
+			$render_parameters['linkedin'] = $parameters;
 
 		} else if(is_array($parameters['linkedin'])){
-			$render_parameters['linkedin'] = $parameters['linkedin'];
+			$render_parameters['linkedin'] = array_merge($parameters, $parameters['linkedin']);
 
 		} else {
 			$render_parameters['linkedin'] = false;
@@ -140,8 +140,8 @@ class SocialBarTwigExtension extends \Twig_Extension{
 			'locale' => 'en',
 			'message' => 'I want to share that page with you',
 			'text' => 'Tweet',
-			'via' => 'The Acme team',
-			'tag' => 'ttot',
+			'via' => $this->container->getParameter("azine_social_bar_twitter_username"),
+			'tag' => array_key_exists('tag', $parameters) ? $parameters['tag'] : $this->container->getParameter("azine_social_bar_twitter_username"),
 			);
 		if($action == "share"){
 			$parameters['actionClass'] = "twitter-share-button";
