@@ -1,7 +1,6 @@
 language: php
 
 php:
-  - 5.3.3
   - 5.3
   - 5.4
   - 5.5
@@ -13,9 +12,9 @@ env:
   - SYMFONY_VERSION=dev-master
 
 before_script: 
-    - composer update --dev --prefer-source
-    - composer require symfony/framework-bundle:${SYMFONY_VERSION} --prefer-source
-    - composer install
+  - composer self-update
+  - composer require symfony/framework-bundle:${SYMFONY_VERSION} --no-update --dev
+  - composer install --dev --prefer-source 
 
 script: 
   - phpunit --coverage-text --coverage-clover=coverage.clover /home/travis/build/azine/AzineSocialBarBundle/Tests/
@@ -25,5 +24,7 @@ script:
 notifications:
   email: travis@azine-it.ch
 
-
+matrix:
+  allow_failures:
+    - env: SYMFONY_VERSION=dev-master
 
