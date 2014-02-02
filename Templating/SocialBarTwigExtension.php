@@ -22,21 +22,23 @@ class SocialBarTwigExtension extends \Twig_Extension{
 
 	public function getFunctions(){
 		return array(
-		'socialButtons' => new \Twig_Function_Method($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
-		'facebookButton' => new \Twig_Function_Method($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
-		'twitterButton' => new \Twig_Function_Method($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
-		'googlePlusButton' => new \Twig_Function_Method($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
-		'xingButton' => new \Twig_Function_Method($this, 'getXingButton' ,array('is_safe' => array('html'))),
-		'linkedInButton' => new \Twig_Function_Method($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
+		'socialButtons' => new \Twig_SimpleFunction($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
+		'facebookButton' => new \Twig_SimpleFunction($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
+		'twitterButton' => new \Twig_SimpleFunction($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
+		'googlePlusButton' => new \Twig_SimpleFunction($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
+		'xingButton' => new \Twig_SimpleFunction($this, 'getXingButton' ,array('is_safe' => array('html'))),
+		'linkedInButton' => new \Twig_SimpleFunction($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
 		);
 	}
 
 	/**
 	 * Get all the buttons in one row
-	 * @param unknown_type $parameters
+	 * @param array $parameters
+	 * @param string $action
 	 */
-	public function getSocialButtons($parameters = array(), $action = "share"){
+	public function getSocialButtons(array $parameters = array(), $action = "share"){
 		$commonParams = $parameters;
+		$render_parameters = array();
 		if(array_key_exists('facebook', $commonParams)) unset($commonParams['facebook']);
 		if(array_key_exists('twitter', $commonParams)) unset($commonParams['twitter']);
 		if(array_key_exists('googleplus', $commonParams)) unset($commonParams['googleplus']);
