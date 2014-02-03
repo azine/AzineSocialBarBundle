@@ -22,12 +22,20 @@ class SocialBarTwigExtension extends \Twig_Extension{
 
 	public function getFunctions(){
 		return array(
-		'socialButtons' => new \Twig_SimpleFunction($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
-		'facebookButton' => new \Twig_SimpleFunction($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
-		'twitterButton' => new \Twig_SimpleFunction($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
-		'googlePlusButton' => new \Twig_SimpleFunction($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
-		'xingButton' => new \Twig_SimpleFunction($this, 'getXingButton' ,array('is_safe' => array('html'))),
-		'linkedInButton' => new \Twig_SimpleFunction($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
+//		This causes trouble, I don't know why, so I use the old version for now.
+// 		'socialButtons' => new \Twig_SimpleFunction($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
+// 		'facebookButton' => new \Twig_SimpleFunction($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
+// 		'twitterButton' => new \Twig_SimpleFunction($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
+// 		'googlePlusButton' => new \Twig_SimpleFunction($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
+// 		'xingButton' => new \Twig_SimpleFunction($this, 'getXingButton' ,array('is_safe' => array('html'))),
+// 		'linkedInButton' => new \Twig_SimpleFunction($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
+
+		'socialButtons' => new \Twig_Function_Method($this, 'getSocialButtons' ,array('is_safe' => array('html'))),
+		'facebookButton' => new \Twig_Function_Method($this, 'getFacebookButton' ,array('is_safe' => array('html'))),
+		'twitterButton' => new \Twig_Function_Method($this, 'getTwitterButton' ,array('is_safe' => array('html'))),
+		'googlePlusButton' => new \Twig_Function_Method($this, 'getGooglePlusButton' ,array('is_safe' => array('html'))),
+		'xingButton' => new \Twig_Function_Method($this, 'getXingButton' ,array('is_safe' => array('html'))),
+		'linkedInButton' => new \Twig_Function_Method($this, 'getLinkedInButton' ,array('is_safe' => array('html'))),
 		);
 	}
 
