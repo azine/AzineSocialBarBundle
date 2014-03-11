@@ -3,8 +3,8 @@ parameters:
 services:
   azine.socialBarHelper:
     class : Azine\SocialBarBundle\Templating\SocialBarHelper
-    tags : 
-      - {name : 'templating.helper', alias : 'social-buttons'} 
+    tags :
+      - {name : 'templating.helper', alias : 'social-buttons'}
     arguments : [ @templating ]
 
   twig.extension.azine_social_bar:
