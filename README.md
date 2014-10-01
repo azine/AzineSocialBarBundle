@@ -35,6 +35,7 @@ azine_social_bar:
 
 
 ## Build-Status ec.
+
 [![Build Status](https://travis-ci.org/azine/AzineSocialBarBundle.png)](https://travis-ci.org/azine/AzineSocialBarBundle)
 [![Total Downloads](https://poser.pugx.org/azine/socialbar-bundle/downloads.png)](https://packagist.org/packages/azine/socialbar-bundle)
 [![Latest Stable Version](https://poser.pugx.org/azine/socialbar-bundle/v/stable.png)](https://packagist.org/packages/azine/socialbar-bundle)
