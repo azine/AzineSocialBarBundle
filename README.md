@@ -41,3 +41,4 @@ azine_social_bar:
 [![Latest Stable Version](https://poser.pugx.org/azine/socialbar-bundle/v/stable.png)](https://packagist.org/packages/azine/socialbar-bundle)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/azine/AzineSocialBarBundle/badges/quality-score.png?s=cfe1738c2ec1c5bed0916521ff5ad5a7a685104c)](https://scrutinizer-ci.com/g/azine/AzineSocialBarBundle/)
 [![Code Coverage](https://scrutinizer-ci.com/g/azine/AzineSocialBarBundle/badges/coverage.png?s=0bd90f54589061f1021010d03b336d2d88043976)](https://scrutinizer-ci.com/g/azine/AzineSocialBarBundle/)
+[![Dependency Status](https://www.versioneye.com/user/projects/567eae9ceb4f470030000016/badge.svg?style=flat)](https://www.versioneye.com/user/projects/567eae9ceb4f470030000016)
