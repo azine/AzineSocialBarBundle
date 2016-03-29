@@ -32,7 +32,6 @@ class SocialBarTwigExtension extends \Twig_Extension
 
     public function getFunctions()
     {
-        $functions = array();
         $functions['socialButtons'   ] = new \Twig_SimpleFunction('socialButtons'   , array($this,'getSocialButtons'), array('is_safe' => array('html')));
         $functions['facebookButton'  ] = new \Twig_SimpleFunction('facebookButton'  , array($this,'getFacebookButton'), array('is_safe' => array('html')));
         $functions['twitterButton'   ] = new \Twig_SimpleFunction('twitterButton'   , array($this,'getTwitterButton'), array('is_safe' => array('html')));
