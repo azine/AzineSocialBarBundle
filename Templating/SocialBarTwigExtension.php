@@ -6,14 +6,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SocialBarTwigExtension extends \Twig_Extension
 {
     protected $container;
-    /**
-     * @var \Twig_Environment
-     */
-    protected $twig;
-
-    public function initRuntime(\Twig_Environment $environment){
-        $this->twig = $environment;
-    }
 
     /**
      * Constructor.
