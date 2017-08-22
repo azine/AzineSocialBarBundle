@@ -5,10 +5,10 @@ services:
     class : Azine\SocialBarBundle\Templating\SocialBarHelper
     tags :
       - {name : 'templating.helper', alias : 'social-buttons'}
-    arguments : [ @templating ]
+    arguments : [ "@templating" ]
 
   twig.extension.azine_social_bar:
     class: Azine\SocialBarBundle\Templating\SocialBarTwigExtension
     tags:
         - { name: 'twig.extension' }
-    arguments : [ @service_container ]
+    arguments : [ "@service_container" ]
