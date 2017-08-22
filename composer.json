@@ -21,7 +21,7 @@
     },
     "require-dev": {
         "symfony/framework-bundle": ">=2.7",
-        "symfony/symfony": "~2.7,>=2.7",
+        "symfony/symfony": ">=2.7",
         "twig/extensions": "~1.0"
     },
     "autoload": {
