@@ -1,16 +1,14 @@
 <?php
+
 namespace Azine\SocialBarBundle\Tests\DependencyInjection;
 
-use Symfony\Component\Yaml\Parser;
-
 use Azine\SocialBarBundle\DependencyInjection\AzineSocialBarExtension;
-
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\Yaml\Parser;
 
 /**
- * This is the class that loads and manages your bundle configuration
+ * This is the class that loads and manages your bundle configuration.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
@@ -20,7 +18,7 @@ class AzineSocialBarExtensionTest extends \PHPUnit_Framework_TestCase
     protected $configuration;
 
     /**
-     * This should not throw an exception
+     * This should not throw an exception.
      */
     public function testMinimalConfig()
     {
@@ -30,7 +28,7 @@ class AzineSocialBarExtensionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * This should not throw an exception
+     * This should not throw an exception.
      */
     public function testFullConfigEmpty()
     {
@@ -46,15 +44,16 @@ class AzineSocialBarExtensionTest extends \PHPUnit_Framework_TestCase
         $config = $this->getFullConfigWithValues();
         $loader->load(array($config), $this->configuration);
 
-        $this->assertParameter("http://fb.profile.url.com", "azine_social_bar_fb_profile_url");
-        $this->assertParameter("http://xing.profile.url.com", "azine_social_bar_xing_profile_url");
-        $this->assertParameter("1234567890", "azine_social_bar_linked_in_company_id");
-        $this->assertParameter("http://google.plus.profile.url.com", "azine_social_bar_google_plus_profile_url");
-        $this->assertParameter("acme", "azine_social_bar_twitter_username");
+        $this->assertParameter('http://fb.profile.url.com', 'azine_social_bar_fb_profile_url');
+        $this->assertParameter('http://xing.profile.url.com', 'azine_social_bar_xing_profile_url');
+        $this->assertParameter(1234567890, 'azine_social_bar_linked_in_company_id');
+        $this->assertParameter('http://google.plus.profile.url.com', 'azine_social_bar_google_plus_profile_url');
+        $this->assertParameter('acme', 'azine_social_bar_twitter_username');
     }
 
     /**
-     * Get the minimal config
+     * Get the minimal config.
+     *
      * @return array
      */
     protected function getMinimalConfig()
@@ -66,9 +65,8 @@ EOF;
         return $parser->parse($yaml);
     }
 
-
     /**
-     * Get a full config for this bundle
+     * Get a full config for this bundle.
      */
     protected function getFullConfigEmpty()
     {
@@ -94,7 +92,7 @@ EOF;
     }
 
     /**
-     * Get a full config for this bundle
+     * Get a full config for this bundle.
      */
     protected function getFullConfigWithValues()
     {
@@ -125,12 +123,11 @@ EOF;
      */
     private function assertParameter($value, $key)
     {
-        $this->assertEquals($value, $this->configuration->getParameter($key), sprintf('%s parameter is correct', $key));
+        $this->assertSame($value, $this->configuration->getParameter($key), sprintf('%s parameter is correct', $key));
     }
 
     protected function tearDown()
     {
         unset($this->configuration);
     }
-
 }

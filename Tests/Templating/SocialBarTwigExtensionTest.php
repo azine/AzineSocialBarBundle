@@ -1,9 +1,9 @@
 <?php
+
 namespace Azine\SocialBarBundle\Tests\Templating;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 use Azine\SocialBarBundle\Templating\SocialBarTwigExtension;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 {
@@ -12,7 +12,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $this->assertEquals('azine_social_bar', $socialBarExt->getName());
+        $this->assertSame('azine_social_bar', $socialBarExt->getName());
     }
 
     public function testGetFunctions()
@@ -21,7 +21,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $functions = $socialBarExt->getFunctions();
-        $this->assertEquals(6, sizeof($functions));
+        $this->assertSame(6, sizeof($functions));
 
         $this->assertArrayHasKey('socialButtons', $functions);
         $this->assertArrayHasKey('facebookButton', $functions);
@@ -29,7 +29,6 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('googlePlusButton', $functions);
         $this->assertArrayHasKey('xingButton', $functions);
         $this->assertArrayHasKey('linkedInButton', $functions);
-
     }
 
     public function testGetSocialButtons_all_plugins_share()
@@ -39,22 +38,21 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'share';
         $inputRenderingParams = array();
-        $expectedRenderingParams = array(	'facebook' => array (),
-                                            'twitter' => array (),
-                                            'googleplus' => array (),
-                                            'xing' => array (),
-                                            'linkedin' => array (),
+        $expectedRenderingParams = array('facebook' => array(),
+                                            'twitter' => array(),
+                                            'googleplus' => array(),
+                                            'xing' => array(),
+                                            'linkedin' => array(),
                                             'action' => 'share',
                                             'width' => 130,
-                                            'height' => 20
+                                            'height' => 20,
         );
 
-        $helperMock->expects($this->once())->method("socialButtons")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $helperMock->expects($this->once())->method('socialButtons')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getSocialButtons($inputRenderingParams, $action);
-
     }
 
     public function testGetSocialButtons_no_plugins()
@@ -63,28 +61,27 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'follow';
-        $inputRenderingParams = array(	'facebook' => false,
+        $inputRenderingParams = array('facebook' => false,
                                         'twitter' => false,
                                         'googleplus' => false,
                                         'xing' => false,
                                         'linkedin' => false,
                                     );
-        $expectedRenderingParams = array(	'facebook' => false,
+        $expectedRenderingParams = array('facebook' => false,
                                             'twitter' => false,
                                             'googleplus' => false,
                                             'xing' => false,
                                             'linkedin' => false,
                                             'action' => 'follow',
                                             'width' => 130,
-                                            'height' => 20
+                                            'height' => 20,
                                         );
 
-        $helperMock->expects($this->once())->method("socialButtons")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $helperMock->expects($this->once())->method('socialButtons')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getSocialButtons($inputRenderingParams, $action);
-
     }
 
     public function testGetSocialButtons_plugins_with_custom_params()
@@ -93,28 +90,27 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'follow';
-        $inputRenderingParams = array(	'facebook' => array('someParam' => 123),
+        $inputRenderingParams = array('facebook' => array('someParam' => 123),
                                         'twitter' => array('someParam' => 456),
                                         'googleplus' => array('someParam' => 789),
                                         'xing' => array('someParam' => 98),
                                         'linkedin' => array('someParam' => 765),
                                     );
-        $expectedRenderingParams = array(	'facebook' => array('someParam' => 123),
+        $expectedRenderingParams = array('facebook' => array('someParam' => 123),
                                             'twitter' => array('someParam' => 456),
                                             'googleplus' => array('someParam' => 789),
                                             'xing' => array('someParam' => 98),
                                             'linkedin' => array('someParam' => 765),
                                             'action' => 'follow',
                                             'width' => 130,
-                                            'height' => 20
+                                            'height' => 20,
                                         );
 
-        $helperMock->expects($this->once())->method("socialButtons")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get", ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->with('azine.socialBarHelper')->will($this->returnValue($helperMock));
+        $helperMock->expects($this->once())->method('socialButtons')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->with('azine.socialBarHelper')->will($this->returnValue($helperMock));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getSocialButtons($inputRenderingParams, $action);
-
     }
 
     public function testGetFacebookButton_follow()
@@ -124,19 +120,19 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'follow';
         $inputRenderingParams = array();
-        $fbProfileUrl = "http://some.fb.url";
-        $expectedRenderingParams = array(	'locale' => 'en_US',
+        $fbProfileUrl = 'http://some.fb.url';
+        $expectedRenderingParams = array('locale' => 'en_US',
                                             'send' => false,
                                             'width' => 130,
                                             'showFaces' => false,
                                             'layout' => 'button_count',
                                             'url' => $fbProfileUrl,
-                                            'action' => 'fb-follow'
+                                            'action' => 'fb-follow',
                                         );
 
-        $helperMock->expects($this->once())->method("facebookButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_fb_profile_url")->will($this->returnValue($fbProfileUrl));
+        $helperMock->expects($this->once())->method('facebookButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->once())->method('getParameter')->with('azine_social_bar_fb_profile_url')->will($this->returnValue($fbProfileUrl));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getFacebookButton($inputRenderingParams, $action);
@@ -148,20 +144,20 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'share';
-        $someUrl = "http://some.fb.url";
+        $someUrl = 'http://some.fb.url';
         $inputRenderingParams = array('url' => $someUrl);
-        $expectedRenderingParams = array(	'locale' => 'en_US',
+        $expectedRenderingParams = array('locale' => 'en_US',
                                             'send' => false,
                                             'width' => 130,
                                             'showFaces' => false,
                                             'layout' => 'button_count',
                                             'url' => $someUrl,
-                                            'action' => 'fb-like'
+                                            'action' => 'fb-like',
                                     );
 
-        $helperMock->expects($this->once())->method("facebookButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->never())->method("getParameter");
+        $helperMock->expects($this->once())->method('facebookButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->never())->method('getParameter');
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getFacebookButton($inputRenderingParams, $action);
@@ -174,8 +170,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $socialBarExt->getFacebookButton(array(), "invalid");
-
+        $socialBarExt->getFacebookButton(array(), 'invalid');
     }
 
     public function testGetTwitterButton_follow()
@@ -185,20 +180,20 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'follow';
         $inputRenderingParams = array();
-        $twitterUserName = "azine";
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $twitterUserName = 'azine';
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => null,
                                             'action' => $twitterUserName,
-                                            'actionClass' => "twitter-follow-button",
+                                            'actionClass' => 'twitter-follow-button',
                                             'message' => 'I want to share that page with you',
                                             'text' => 'Tweet',
                                             'via' => $twitterUserName,
                                             'tag' => $twitterUserName,
                                         );
 
-        $helperMock->expects($this->once())->method("twitterButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->exactly(3))->method("getParameter")->with("azine_social_bar_twitter_username")->will($this->returnValue($twitterUserName));
+        $helperMock->expects($this->once())->method('twitterButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->exactly(3))->method('getParameter')->with('azine_social_bar_twitter_username')->will($this->returnValue($twitterUserName));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getTwitterButton($inputRenderingParams, $action);
@@ -210,21 +205,21 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'share';
-        $someUrl = "http://some.fb.url";
+        $someUrl = 'http://some.fb.url';
         $inputRenderingParams = array('url' => $someUrl, 'tag' => 'someTag');
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $someUrl,
-                                            'action' => "share",
-                                            'actionClass' => "twitter-share-button",
+                                            'action' => 'share',
+                                            'actionClass' => 'twitter-share-button',
                                             'message' => 'I want to share that page with you',
                                             'text' => 'Tweet',
                                             'via' => 'azine team',
                                             'tag' => 'someTag',
                                         );
 
-        $helperMock->expects($this->once())->method("twitterButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_twitter_username")->will($this->returnValue('azine team'));
+        $helperMock->expects($this->once())->method('twitterButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->once())->method('getParameter')->with('azine_social_bar_twitter_username')->will($this->returnValue('azine team'));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getTwitterButton($inputRenderingParams, $action);
@@ -237,8 +232,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $socialBarExt->getTwitterButton(array(), "invalid");
-
+        $socialBarExt->getTwitterButton(array(), 'invalid');
     }
 
     public function testGetGooglePlusButton_follow()
@@ -248,8 +242,8 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'follow';
         $inputRenderingParams = array();
-        $googleProfile = "http://plus.google.com/some/profile/url/76543234567";
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $googleProfile = 'http://plus.google.com/some/profile/url/76543234567';
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $googleProfile,
                                             'action' => 'g-follow',
                                             'size' => 'medium',
@@ -259,13 +253,12 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
                                             'rel' => 'publisher',
                                         );
 
-        $helperMock->expects($this->once())->method("googlePlusButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_google_plus_profile_url")->will($this->returnValue($googleProfile));
+        $helperMock->expects($this->once())->method('googlePlusButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->once())->method('getParameter')->with('azine_social_bar_google_plus_profile_url')->will($this->returnValue($googleProfile));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getGooglePlusButton($inputRenderingParams, $action);
-
     }
 
     public function testGetGooglePlusButton_plus()
@@ -274,9 +267,9 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'share';
-        $someUrl = "http://some.url.com/76543234567";
+        $someUrl = 'http://some.url.com/76543234567';
         $inputRenderingParams = array('url' => $someUrl);
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $someUrl,
                                             'action' => 'g-plusone',
                                             'size' => 'medium',
@@ -286,13 +279,12 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
                                             'rel' => 'author',
                                         );
 
-        $helperMock->expects($this->once())->method("googlePlusButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->never())->method("getParameter");
+        $helperMock->expects($this->once())->method('googlePlusButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->never())->method('getParameter');
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getGooglePlusButton($inputRenderingParams, $action);
-
     }
 
     /**
@@ -302,8 +294,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $socialBarExt->getGooglePlusButton(array(), "invalid");
-
+        $socialBarExt->getGooglePlusButton(array(), 'invalid');
     }
 
     public function testGetLinkedInButton_follow()
@@ -313,20 +304,19 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'follow';
         $inputRenderingParams = array();
-        $companyId = "6543234567";
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $companyId = '6543234567';
+        $expectedRenderingParams = array('locale' => 'en',
                                             'companyId' => $companyId,
                                             'action' => 'IN/FollowCompany',
                                             'counterLocation' => 'right',
                                         );
 
-        $helperMock->expects($this->once())->method("linkedInButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_linked_in_company_id")->will($this->returnValue($companyId));
+        $helperMock->expects($this->once())->method('linkedInButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->once())->method('getParameter')->with('azine_social_bar_linked_in_company_id')->will($this->returnValue($companyId));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getLinkedInButton($inputRenderingParams, $action);
-
     }
 
     public function testGetLinkedInButton_share()
@@ -335,21 +325,20 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'share';
-        $someUrl = "http://some.url.com/76543234567";
+        $someUrl = 'http://some.url.com/76543234567';
         $inputRenderingParams = array('url' => $someUrl);
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $someUrl,
                                             'action' => 'IN/Share',
                                             'counterLocation' => 'right',
                                     );
 
-        $helperMock->expects($this->once())->method("linkedInButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->never())->method("getParameter");
+        $helperMock->expects($this->once())->method('linkedInButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->never())->method('getParameter');
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getLinkedInButton($inputRenderingParams, $action);
-
     }
 
     /**
@@ -359,8 +348,7 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $socialBarExt->getLinkedInButton(array(), "invalid");
-
+        $socialBarExt->getLinkedInButton(array(), 'invalid');
     }
 
     public function testGetXingButton_follow()
@@ -370,20 +358,19 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
 
         $action = 'follow';
         $inputRenderingParams = array();
-        $profileUrl = "http://xing.com/some/profile/url/76543234567";
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $profileUrl = 'http://xing.com/some/profile/url/76543234567';
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $profileUrl,
                                             'action' => 'XING/Share',
                                             'counterLocation' => 'right',
                                         );
 
-        $helperMock->expects($this->once())->method("xingButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->once())->method("getParameter")->with("azine_social_bar_xing_profile_url")->will($this->returnValue($profileUrl));
+        $helperMock->expects($this->once())->method('xingButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->once())->method('getParameter')->with('azine_social_bar_xing_profile_url')->will($this->returnValue($profileUrl));
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getXingButton($inputRenderingParams, $action);
-
     }
 
     public function testGetXingButton_share()
@@ -392,21 +379,20 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
         $helperMock = $this->getMockBuilder("Azine\SocialBarBundle\Templating\SocialBarHelper")->disableOriginalConstructor()->getMock();
 
         $action = 'share';
-        $someUrl = "http://some.url.com/76543234567";
+        $someUrl = 'http://some.url.com/76543234567';
         $inputRenderingParams = array('url' => $someUrl);
-        $expectedRenderingParams = array(	'locale' => 'en',
+        $expectedRenderingParams = array('locale' => 'en',
                                             'url' => $someUrl,
                                             'action' => 'XING/Share',
                                             'counterLocation' => 'right',
                                     );
 
-        $helperMock->expects($this->once())->method("xingButton")->with($expectedRenderingParams);
-        $containerMock->expects($this->once())->method("get")->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
-        $containerMock->expects($this->never())->method("getParameter");
+        $helperMock->expects($this->once())->method('xingButton')->with($expectedRenderingParams);
+        $containerMock->expects($this->once())->method('get')->with('azine.socialBarHelper', ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE)->will($this->returnValue($helperMock));
+        $containerMock->expects($this->never())->method('getParameter');
 
         $socialBarExt = new SocialBarTwigExtension($containerMock);
         $socialBarExt->getXingButton($inputRenderingParams, $action);
-
     }
 
     /**
@@ -416,8 +402,6 @@ class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
     {
         $containerMock = $this->getMockBuilder("Symfony\Component\DependencyInjection\ContainerInterface")->getMock();
         $socialBarExt = new SocialBarTwigExtension($containerMock);
-        $socialBarExt->getXingButton(array(), "invalid");
-
+        $socialBarExt->getXingButton(array(), 'invalid');
     }
-
 }
