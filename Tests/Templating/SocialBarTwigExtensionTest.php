@@ -5,7 +5,7 @@ namespace Azine\SocialBarBundle\Tests\Templating;
 use Azine\SocialBarBundle\Templating\SocialBarTwigExtension;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class SocialBarTwigExtensionTest extends \PHPUnit_Framework_TestCase
+class SocialBarTwigExtensionTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetName()
     {
