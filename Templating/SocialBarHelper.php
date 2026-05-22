@@ -2,53 +2,41 @@
 
 namespace Azine\SocialBarBundle\Templating;
 
-use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\Templating\Helper\Helper;
+use Twig\Environment;
 
-/**
- * @codeCoverageIgnoreStart
- */
-class SocialBarHelper extends Helper
+class SocialBarHelper
 {
-    protected $templating;
-
-    public function __construct(EngineInterface $templating)
+    public function __construct(private readonly Environment $twig)
     {
-        $this->templating = $templating;
     }
 
-    public function socialButtons($parameters)
+    public function socialButtons(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::socialButtons.html.twig', $parameters);
+        return $this->twig->render('@AzineSocialBar/socialButtons.html.twig', $parameters);
     }
 
-    public function facebookButton($parameters)
+    public function facebookButton(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::facebookButton.html.twig', $parameters);
+        return $this->twig->render('@AzineSocialBar/facebookButton.html.twig', $parameters);
     }
 
-    public function twitterButton($parameters)
+    public function twitterButton(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::twitterButton.html.twig', $parameters);
+        return $this->twig->render('@AzineSocialBar/twitterButton.html.twig', $parameters);
     }
 
-    public function googlePlusButton($parameters)
+    public function googlePlusButton(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::googlePlusButton.html.twig', $parameters);
+        return $this->twig->render('@AzineSocialBar/googlePlusButton.html.twig', $parameters);
     }
 
-    public function linkedInButton($parameters)
+    public function linkedInButton(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::linkedInButton.html.twig', $parameters);
+        return $this->twig->render('@AzineSocialBar/linkedInButton.html.twig', $parameters);
     }
 
-    public function xingButton($parameters)
+    public function xingButton(array $parameters): string
     {
-        return $this->templating->render('AzineSocialBarBundle::xingButton.html.twig', $parameters);
-    }
-
-    public function getName()
-    {
-        return 'socialButtons';
+        return $this->twig->render('@AzineSocialBar/xingButton.html.twig', $parameters);
     }
 }
