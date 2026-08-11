@@ -68,6 +68,23 @@ class SocialBarTwigExtensionTest extends TestCase
         $socialBarExt->getFacebookButton(['fbProfileUrl' => 'http://some.fb.url'], 'follow');
     }
 
+    public function testConfiguredFacebookProfileIsUsedForFollowButton(): void
+    {
+        $helperMock = $this->createMock(SocialBarHelper::class);
+        $helperMock
+            ->expects(self::once())
+            ->method('facebookButton')
+            ->with(self::callback(static fn (array $parameters): bool => 'https://facebook.com/azine.me' === $parameters['url']))
+            ->willReturn('');
+
+        $socialBarExt = new SocialBarTwigExtension(
+            socialBarHelper: $helperMock,
+            facebookProfileUrl: 'https://facebook.com/azine.me',
+        );
+
+        $socialBarExt->getFacebookButton([], 'follow');
+    }
+
     public function testGetTwitterButtonShare(): void
     {
         $helperMock = $this->createMock(SocialBarHelper::class);
@@ -85,6 +102,23 @@ class SocialBarTwigExtensionTest extends TestCase
         $helperMock->expects(self::once())->method('twitterButton')->with($expected)->willReturn('');
         $socialBarExt = new SocialBarTwigExtension($helperMock);
         $socialBarExt->getTwitterButton(['url' => 'http://some.url', 'tag' => 'someTag', 'twitterUsername' => 'azine-team'], 'share');
+    }
+
+    public function testConfiguredTwitterUsernameIsUsedByDefault(): void
+    {
+        $helperMock = $this->createMock(SocialBarHelper::class);
+        $helperMock
+            ->expects(self::once())
+            ->method('twitterButton')
+            ->with(self::callback(static fn (array $parameters): bool => 'azineme' === $parameters['via'] && 'azineme' === $parameters['tag']))
+            ->willReturn('');
+
+        $socialBarExt = new SocialBarTwigExtension(
+            socialBarHelper: $helperMock,
+            twitterUsername: 'azineme',
+        );
+
+        $socialBarExt->getTwitterButton();
     }
 
     public function testInvalidActionThrowsException(): void
