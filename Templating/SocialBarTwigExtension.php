@@ -25,12 +25,12 @@ class SocialBarTwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('socialButtons', [$this, 'getSocialButtons'], ['is_safe' => ['html']]),
-            new TwigFunction('facebookButton', [$this, 'getFacebookButton'], ['is_safe' => ['html']]),
-            new TwigFunction('twitterButton', [$this, 'getTwitterButton'], ['is_safe' => ['html']]),
-            new TwigFunction('googlePlusButton', [$this, 'getGooglePlusButton'], ['is_safe' => ['html']]),
-            new TwigFunction('xingButton', [$this, 'getXingButton'], ['is_safe' => ['html']]),
-            new TwigFunction('linkedInButton', [$this, 'getLinkedInButton'], ['is_safe' => ['html']]),
+            'socialButtons' => new TwigFunction('socialButtons', [$this, 'getSocialButtons'], ['is_safe' => ['html']]),
+            'facebookButton' => new TwigFunction('facebookButton', [$this, 'getFacebookButton'], ['is_safe' => ['html']]),
+            'twitterButton' => new TwigFunction('twitterButton', [$this, 'getTwitterButton'], ['is_safe' => ['html']]),
+            'googlePlusButton' => new TwigFunction('googlePlusButton', [$this, 'getGooglePlusButton'], ['is_safe' => ['html']]),
+            'xingButton' => new TwigFunction('xingButton', [$this, 'getXingButton'], ['is_safe' => ['html']]),
+            'linkedInButton' => new TwigFunction('linkedInButton', [$this, 'getLinkedInButton'], ['is_safe' => ['html']]),
         ];
     }
 
