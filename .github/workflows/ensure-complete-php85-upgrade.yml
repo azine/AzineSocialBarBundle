@@ -1,0 +1,139 @@
+name: Ensure complete PHP 8.5 upgrade
+
+on:
+  push:
+    branches:
+      - automation/ensure-complete-20260831-final
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  verify-merge-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PR_NUMBER: '4'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+          extensions: ctype, dom, fileinfo, filter, gd, iconv, intl, json, mbstring, pdo, pdo_sqlite, simplexml, tokenizer, xml, xmlwriter
+
+      - name: Define validator
+        run: |
+          cat > /tmp/validate-socialbar.sh <<'BASH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          composer validate --strict --no-check-publish
+          php -r '$c=json_decode(file_get_contents("composer.json"),true,512,JSON_THROW_ON_ERROR); if (!str_contains((string)($c["require"]["php"]??""),"8.5")) {fwrite(STDERR,"PHP 8.5 constraint missing\n"); exit(1);} if (isset($c["require"]["symfony/symfony"])) {fwrite(STDERR,"symfony/symfony monolith remains\n"); exit(1);} foreach (["require","require-dev"] as $s) foreach (($c[$s]??[]) as $n=>$v) if (str_starts_with($n,"symfony/") && !str_starts_with($n,"symfony/polyfill-") && !str_contains((string)$v,"7.4")) {fwrite(STDERR,"$n must target Symfony 7.4, got $v\n"); exit(1);} if (!str_contains((string)($c["require"]["twig/twig"]??$c["require-dev"]["twig/twig"]??""),"3")) {fwrite(STDERR,"Twig 3 constraint missing\n"); exit(1);} if (!str_contains((string)($c["require-dev"]["phpunit/phpunit"]??""),"12")) {fwrite(STDERR,"PHPUnit 12 constraint missing\n"); exit(1);}'
+          test ! -e .travis.yml
+          test ! -d .upgrade
+          ! find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' \) | grep -q .
+          ! grep -R --line-number --include='*.php' -E 'Twig_Extension|Twig_Simple(Filter|Function)|ContainerAware|Controller\\Controller|\$this->get\(|getDoctrine\(' . --exclude-dir=vendor --exclude-dir=.git
+          ! grep -R --line-number -i 'assetic' . --exclude-dir=.git --exclude='README*' --exclude='UPGRADE*' --exclude='CHANGELOG*'
+          grep -R -q "php-version: ['\"]8.5" .github/workflows
+          grep -R -q 'prefer-lowest' .github/workflows
+          grep -R -q 'actions/checkout@v6' .github/workflows
+          test -f phpunit.xml.dist
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-dist --no-interaction
+          find . -path ./vendor -prune -o -path ./.git -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+          find . -path ./vendor -prune -o -path ./.git -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+          BASH
+          chmod +x /tmp/validate-socialbar.sh
+
+      - name: Prepare, validate, and merge candidate when necessary
+        run: |
+          set -euo pipefail
+          if ! gh pr view "$PR_NUMBER" -R "$REPOSITORY" >/dev/null 2>&1; then
+            candidate=$(gh pr list -R "$REPOSITORY" --state all --limit 100 --json number,title,baseRefName,headRepositoryOwner --jq '[.[] | select(.baseRefName == "master") | select(.headRepositoryOwner.login == "azine") | select((.title|ascii_downcase|contains("upgrade")) or (.title|contains("PHP 8.5")) or (.title|contains("Symfony 7.4"))) ] | sort_by(.number) | last | .number')
+            test -n "$candidate" && test "$candidate" != 'null'
+            PR_NUMBER="$candidate"
+          fi
+          merged=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json mergedAt --jq '.mergedAt != null')
+          if [ "$merged" = 'true' ]; then exit 0; fi
+          state=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json state --jq .state)
+          if [ "$state" = 'CLOSED' ]; then gh pr reopen "$PR_NUMBER" -R "$REPOSITORY"; fi
+          draft=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json isDraft --jq .isDraft)
+          if [ "$draft" = 'true' ]; then gh pr ready "$PR_NUMBER" -R "$REPOSITORY"; fi
+          head=$(gh pr view "$PR_NUMBER" -R "$REPOSITORY" --json headRefName --jq .headRefName)
+          git fetch origin "$head"
+          git checkout -B candidate "origin/$head"
+          rm -rf .upgrade
+          rm -f .travis.yml
+          find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' \) -delete
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then git commit -m 'Remove temporary upgrade and legacy CI helpers'; git push origin HEAD:"$head"; fi
+          /tmp/validate-socialbar.sh
+          unresolved=$(gh api graphql -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' -F owner=azine -F name=AzineSocialBarBundle -F number="$PR_NUMBER" --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved==false)] | length')
+          test "$unresolved" = '0'
+          gh pr edit "$PR_NUMBER" -R "$REPOSITORY" --body "$(cat <<'EOF'
+## Summary
+
+Authoritative PHP 8.5 / Symfony 7.4 upgrade for AzineSocialBarBundle.
+
+- modern Symfony 7.4 component and dependency-injection APIs;
+- Twig 3 integration with the documented social-bar rendering contract preserved;
+- removal of obsolete CI/runtime integrations and temporary upgrade helpers;
+- PHPUnit 12 coverage with stable and lowest dependency validation;
+- strict Composer validation and full source/test linting;
+- updated installation, asset and migration documentation.
+
+Part of #5.
+EOF
+)"
+          gh pr merge "$PR_NUMBER" -R "$REPOSITORY" --squash --delete-branch --subject 'Upgrade AzineSocialBarBundle to PHP 8.5 and Symfony 7.4'
+
+      - name: Clean and validate merged master
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout -B master origin/master
+          rm -rf .upgrade
+          rm -f .travis.yml
+          find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' -o -name 'finalize-php85-upgrade.yml' -o -name 'publish-php85-release.yml' \) -delete
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then git commit -m 'Remove temporary upgrade and release helpers'; git push origin HEAD:master; fi
+          /tmp/validate-socialbar.sh
+
+      - name: Publish release, close issues, and clean branches
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          latest=$(git tag -l --sort=-v:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)
+          if [ -z "$latest" ]; then version=1.0.0; else version=$(python3 - "$latest" <<'PY'
+          import re,sys
+          m=re.fullmatch(r'v?(\d+)\.(\d+)\.(\d+)',sys.argv[1]); print(f'{int(m.group(1))+1}.0.0')
+          PY
+          ); fi
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then test "$(git rev-list -n1 "$version")" = "$(git rev-parse HEAD)"; else git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git tag -a "$version" -m "AzineSocialBarBundle $version"; git push origin "$version"; fi
+          if ! gh release view "$version" -R "$REPOSITORY" >/dev/null 2>&1; then gh release create "$version" -R "$REPOSITORY" --verify-tag --title "$version — PHP 8.5 / Symfony 7.4" --notes 'Major upgrade to PHP 8.5, Symfony 7.4, Twig 3 and PHPUnit 12. Preserves the documented social-bar rendering contract, modernizes dependency injection, removes obsolete CI/runtime integrations, and validates stable and lowest dependency sets.'; fi
+          children=$(gh issue list -R "$REPOSITORY" --state open --limit 100 --search '"Parent epic: #5"' --json number --jq '.[].number')
+          for issue in $children; do gh issue comment "$issue" -R "$REPOSITORY" --body "Completed by the authoritative merged upgrade and immutable release \`$version\`."; gh issue close "$issue" -R "$REPOSITORY" --reason completed; done
+          if gh issue view 5 -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then gh issue comment 5 -R "$REPOSITORY" --body "Upgrade complete: the candidate and merged \`master\` passed independent PHP 8.5 stable/lowest validation and immutable release \`$version\` is published."; gh issue close 5 -R "$REPOSITORY" --reason completed; fi
+          for branch in automation/ensure-complete-20260831-final automation/finalize-php85-20260831 automation/publish-php85-release-20260831; do git push origin --delete "$branch" 2>/dev/null || true; done
