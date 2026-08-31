@@ -2,244 +2,176 @@
 
 namespace Azine\SocialBarBundle\Templating;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class SocialBarTwigExtension extends \Twig_Extension
+class SocialBarTwigExtension extends AbstractExtension
 {
-    protected $container;
-
-    /**
-     * Constructor.
-     *
-     * @param ContainerInterface $container
-     */
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
+    public function __construct(
+        private readonly SocialBarHelper $socialBarHelper,
+        private readonly string $facebookProfileUrl = '',
+        private readonly string $xingProfileUrl = '',
+        private readonly string $linkedInCompanyId = '',
+        private readonly string $googlePlusProfileUrl = '',
+        private readonly string $twitterUsername = '',
+    ) {
     }
 
-    public function getName()
+    public function getName(): string
     {
         return 'azine_social_bar';
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
-        $functions['socialButtons'] = new \Twig_SimpleFunction('socialButtons', array($this, 'getSocialButtons'), array('is_safe' => array('html')));
-        $functions['facebookButton'] = new \Twig_SimpleFunction('facebookButton', array($this, 'getFacebookButton'), array('is_safe' => array('html')));
-        $functions['twitterButton'] = new \Twig_SimpleFunction('twitterButton', array($this, 'getTwitterButton'), array('is_safe' => array('html')));
-        $functions['googlePlusButton'] = new \Twig_SimpleFunction('googlePlusButton', array($this, 'getGooglePlusButton'), array('is_safe' => array('html')));
-        $functions['xingButton'] = new \Twig_SimpleFunction('xingButton', array($this, 'getXingButton'), array('is_safe' => array('html')));
-        $functions['linkedInButton'] = new \Twig_SimpleFunction('linkedInButton', array($this, 'getLinkedInButton'), array('is_safe' => array('html')));
-
-        return $functions;
+        return [
+            'socialButtons' => new TwigFunction('socialButtons', [$this, 'getSocialButtons'], ['is_safe' => ['html']]),
+            'facebookButton' => new TwigFunction('facebookButton', [$this, 'getFacebookButton'], ['is_safe' => ['html']]),
+            'twitterButton' => new TwigFunction('twitterButton', [$this, 'getTwitterButton'], ['is_safe' => ['html']]),
+            'googlePlusButton' => new TwigFunction('googlePlusButton', [$this, 'getGooglePlusButton'], ['is_safe' => ['html']]),
+            'xingButton' => new TwigFunction('xingButton', [$this, 'getXingButton'], ['is_safe' => ['html']]),
+            'linkedInButton' => new TwigFunction('linkedInButton', [$this, 'getLinkedInButton'], ['is_safe' => ['html']]),
+        ];
     }
 
-    /**
-     * Get all the buttons in one row.
-     *
-     * @param array  $parameters
-     * @param string $action
-     */
-    public function getSocialButtons(array $parameters = array(), $action = 'share')
+    public function getSocialButtons(array $parameters = [], string $action = 'share'): string
     {
-        $commonParams = $parameters;
-        $render_parameters = array();
-        if (array_key_exists('facebook', $commonParams)) {
-            unset($commonParams['facebook']);
-        }
-        if (array_key_exists('twitter', $commonParams)) {
-            unset($commonParams['twitter']);
-        }
-        if (array_key_exists('googleplus', $commonParams)) {
-            unset($commonParams['googleplus']);
-        }
-        if (array_key_exists('xing', $commonParams)) {
-            unset($commonParams['xing']);
-        }
-        if (array_key_exists('linkedin', $commonParams)) {
-            unset($commonParams['linkedin']);
+        $commonParameters = $parameters;
+        $renderParameters = [];
+
+        foreach (['facebook', 'twitter', 'googleplus', 'xing', 'linkedin'] as $network) {
+            unset($commonParameters[$network]);
         }
 
-        // no parameters were defined, keeps default values
-        if (!array_key_exists('facebook', $parameters)) {
-            $render_parameters['facebook'] = $parameters;
-
-        // parameters are defined, overrides default values
-        } elseif (is_array($parameters['facebook'])) {
-            $render_parameters['facebook'] = array_merge($commonParams, $parameters['facebook']);
-
-        // the button is not displayed
-        } else {
-            $render_parameters['facebook'] = false;
+        foreach (['facebook', 'twitter', 'googleplus', 'xing', 'linkedin'] as $network) {
+            if (!array_key_exists($network, $parameters)) {
+                $renderParameters[$network] = $commonParameters;
+            } elseif (is_array($parameters[$network])) {
+                $renderParameters[$network] = array_merge($commonParameters, $parameters[$network]);
+            } else {
+                $renderParameters[$network] = false;
+            }
         }
 
-        if (!array_key_exists('twitter', $parameters)) {
-            $render_parameters['twitter'] = $parameters;
-        } elseif (is_array($parameters['twitter'])) {
-            $render_parameters['twitter'] = array_merge($commonParams, $parameters['twitter']);
-        } else {
-            $render_parameters['twitter'] = false;
-        }
+        $renderParameters['action'] = $action;
+        $renderParameters['width'] = 130;
+        $renderParameters['height'] = 20;
 
-        if (!array_key_exists('googleplus', $parameters)) {
-            $render_parameters['googleplus'] = $parameters;
-        } elseif (is_array($parameters['googleplus'])) {
-            $render_parameters['googleplus'] = array_merge($commonParams, $parameters['googleplus']);
-        } else {
-            $render_parameters['googleplus'] = false;
-        }
-
-        if (!array_key_exists('xing', $parameters)) {
-            $render_parameters['xing'] = $parameters;
-        } elseif (is_array($parameters['xing'])) {
-            $render_parameters['xing'] = array_merge($commonParams, $parameters['xing']);
-        } else {
-            $render_parameters['xing'] = false;
-        }
-
-        if (!array_key_exists('linkedin', $parameters)) {
-            $render_parameters['linkedin'] = $parameters;
-        } elseif (is_array($parameters['linkedin'])) {
-            $render_parameters['linkedin'] = array_merge($commonParams, $parameters['linkedin']);
-        } else {
-            $render_parameters['linkedin'] = false;
-        }
-
-        $render_parameters['action'] = $action;
-        $render_parameters['width'] = 130;
-        $render_parameters['height'] = 20;
-
-        // get the helper service and display the template
-        return $this->container->get('azine.socialBarHelper')->socialButtons($render_parameters);
+        return $this->socialBarHelper->socialButtons($renderParameters);
     }
 
-    /**
-     * Render the html for the facebook like button
-     * => https://developers.facebook.com/docs/reference/plugins/like/.
-     *
-     * @param array $parameters
-     */
-    public function getFacebookButton($parameters = array(), $action = 'share')
+    public function getFacebookButton(array $parameters = [], string $action = 'share'): string
     {
-        // default values, you can override the values by setting them
-        $parameters = $parameters + array(
+        $parameters += [
             'locale' => 'en_US',
             'send' => false,
             'width' => 130,
             'showFaces' => false,
             'layout' => 'button_count',
-            );
+        ];
 
-        if ('share' == $action) {
-            $parameters['url'] = array_key_exists('url', $parameters) ? $parameters['url'] : null;
+        if ('share' === $action) {
+            $parameters['url'] ??= null;
             $parameters['action'] = 'fb-like';
-        } elseif ('follow' == $action) {
-            $parameters['url'] = $this->container->getParameter('azine_social_bar_fb_profile_url');
+        } elseif ('follow' === $action) {
+            $parameters['url'] = $parameters['fbProfileUrl'] ?? $this->facebookProfileUrl;
             $parameters['action'] = 'fb-follow';
         } else {
-            throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+            throw new \InvalidArgumentException("Unknown social action. Only 'share' and 'follow' are supported.");
         }
 
-        return $this->container->get('azine.socialBarHelper')->facebookButton($parameters);
+        unset($parameters['fbProfileUrl']);
+
+        return $this->socialBarHelper->facebookButton($parameters);
     }
 
-    /**
-     * Render the html for the twitter button
-     * =>.
-     *
-     * @param array $parameters
-     */
-    public function getTwitterButton($parameters = array(), $action = 'share')
+    public function getTwitterButton(array $parameters = [], string $action = 'share'): string
     {
-        $parameters = $parameters + array(
-            'url' => array_key_exists('url', $parameters) ? $parameters['url'] : null,
+        $twitterUsername = $parameters['twitterUsername'] ?? $this->twitterUsername;
+        $parameters += [
+            'url' => $parameters['url'] ?? null,
             'locale' => 'en',
             'message' => 'I want to share that page with you',
             'text' => 'Tweet',
-            'via' => $this->container->getParameter('azine_social_bar_twitter_username'),
-            'tag' => array_key_exists('tag', $parameters) ? $parameters['tag'] : $this->container->getParameter('azine_social_bar_twitter_username'),
-            );
-        if ('share' == $action) {
+            'via' => $twitterUsername,
+            'tag' => $parameters['tag'] ?? $twitterUsername,
+        ];
+
+        if ('share' === $action) {
             $parameters['actionClass'] = 'twitter-share-button';
             $parameters['action'] = 'share';
-        } elseif ('follow' == $action) {
+        } elseif ('follow' === $action) {
             $parameters['actionClass'] = 'twitter-follow-button';
-            $parameters['action'] = $this->container->getParameter('azine_social_bar_twitter_username');
+            $parameters['action'] = $twitterUsername;
         } else {
-            throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+            throw new \InvalidArgumentException("Unknown social action. Only 'share' and 'follow' are supported.");
         }
 
-        return $this->container->get('azine.socialBarHelper')->twitterButton($parameters);
+        unset($parameters['twitterUsername']);
+
+        return $this->socialBarHelper->twitterButton($parameters);
     }
 
-    /**
-     * Render the html for the Google+ button
-     * =>.
-     *
-     * @param array $parameters
-     */
-    public function getGooglePlusButton($parameters = array(), $action = 'share')
+    public function getGooglePlusButton(array $parameters = [], string $action = 'share'): string
     {
-        $parameters = $parameters + array(
+        $parameters += [
             'locale' => 'en',
             'size' => 'medium',
             'annotation' => 'bubble',
             'width' => 130,
             'height' => 20,
-        );
+        ];
 
-        if ('share' == $action) {
-            $parameters['url'] = array_key_exists('url', $parameters) ? $parameters['url'] : null;
+        if ('share' === $action) {
+            $parameters['url'] ??= null;
             $parameters['rel'] = 'author';
             $parameters['action'] = 'g-plusone';
-        } elseif ('follow' == $action) {
-            $parameters['url'] = $this->container->getParameter('azine_social_bar_google_plus_profile_url');
+        } elseif ('follow' === $action) {
+            $parameters['url'] = $parameters['googlePlusProfileUrl'] ?? $this->googlePlusProfileUrl;
             $parameters['rel'] = 'publisher';
             $parameters['action'] = 'g-follow';
         } else {
-            throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+            throw new \InvalidArgumentException("Unknown social action. Only 'share' and 'follow' are supported.");
         }
 
-        return $this->container->get('azine.socialBarHelper')->googlePlusButton($parameters);
+        unset($parameters['googlePlusProfileUrl']);
+
+        return $this->socialBarHelper->googlePlusButton($parameters);
     }
 
-    public function getLinkedInButton($parameters = array(), $action = 'share')
+    public function getLinkedInButton(array $parameters = [], string $action = 'share'): string
     {
-        $parameters = $parameters + array(
-            'locale' => 'en',
-            'counterLocation' => 'right',
-        );
+        $parameters += ['locale' => 'en', 'counterLocation' => 'right'];
 
-        if ('share' == $action) {
+        if ('share' === $action) {
             $parameters['action'] = 'IN/Share';
-            $parameters['url'] = array_key_exists('url', $parameters) ? $parameters['url'] : null;
-        } elseif ('follow' == $action) {
+            $parameters['url'] ??= null;
+        } elseif ('follow' === $action) {
             $parameters['action'] = 'IN/FollowCompany';
-            $parameters['companyId'] = $this->container->getParameter('azine_social_bar_linked_in_company_id');
+            $parameters['companyId'] = $parameters['linkedInCompanyId'] ?? $this->linkedInCompanyId;
         } else {
-            throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+            throw new \InvalidArgumentException("Unknown social action. Only 'share' and 'follow' are supported.");
         }
 
-        return $this->container->get('azine.socialBarHelper')->linkedInButton($parameters);
+        unset($parameters['linkedInCompanyId']);
+
+        return $this->socialBarHelper->linkedInButton($parameters);
     }
 
-    public function getXingButton($parameters = array(), $action = 'share')
+    public function getXingButton(array $parameters = [], string $action = 'share'): string
     {
-        $parameters = $parameters + array(
-            'locale' => 'en',
-            'action' => 'XING/Share',
-            'counterLocation' => 'right',
-        );
+        $parameters += ['locale' => 'en', 'action' => 'XING/Share', 'counterLocation' => 'right'];
 
-        if ('share' == $action) {
-            $parameters['url'] = array_key_exists('url', $parameters) ? $parameters['url'] : null;
-        } elseif ('follow' == $action) {
-            $parameters['url'] = $this->container->getParameter('azine_social_bar_xing_profile_url');
+        if ('share' === $action) {
+            $parameters['url'] ??= null;
+        } elseif ('follow' === $action) {
+            $parameters['url'] = $parameters['xingProfileUrl'] ?? $this->xingProfileUrl;
         } else {
-            throw new \Exception("Unknown social action. Only 'share' and 'follow' are known at the moment.");
+            throw new \InvalidArgumentException("Unknown social action. Only 'share' and 'follow' are supported.");
         }
 
-        return $this->container->get('azine.socialBarHelper')->xingButton($parameters);
+        unset($parameters['xingProfileUrl']);
+
+        return $this->socialBarHelper->xingButton($parameters);
     }
 }

@@ -1,9 +1,14 @@
 {
     "name": "azine/socialbar-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle to easily add a social-bar to your pages ",
-    "keywords": ["social bar", "social", "share", "share button", "like", "like button"],
-    "homepage": "https://github.com/azine/AzineSocialBarBundle.git",
+    "description": "Bundle to add configurable social share and follow buttons to Symfony applications.",
+    "keywords": [
+        "social",
+        "share",
+        "symfony",
+        "twig"
+    ],
+    "homepage": "https://github.com/azine/AzineSocialBarBundle",
     "license": "MIT",
     "authors": [
         {
@@ -11,22 +16,32 @@
             "email": "github@azine-it.ch"
         }
     ],
-    "config": {
-        "process-timeout": 590,
-        "github-protocols": ["https", "git", "ssh"],
-        "github-domains": ["github.com"]
-    },
     "require": {
-        "php": "^7.0",
-        "symfony/symfony": "~3.0"
+        "php": "^8.5",
+        "symfony/config": "^7.4",
+        "symfony/dependency-injection": "^7.4",
+        "symfony/http-kernel": "^7.4",
+        "symfony/twig-bundle": "^7.4",
+        "twig/twig": "^3.14"
     },
     "require-dev": {
-        "phpunit/phpunit":  "~7.0",
-        "friendsofphp/php-cs-fixer": "^2.2"
+        "friendsofphp/php-cs-fixer": "^3.90",
+        "phpunit/phpunit": "^12.0",
+        "symfony/yaml": "^7.4"
     },
     "autoload": {
-        "psr-0": { "Azine\\SocialBarBundle": "" }
+        "psr-4": {
+            "Azine\\SocialBarBundle\\": ""
+        }
     },
-    "minimum-stability": "dev",
-    "target-dir": "Azine/SocialBarBundle"
+    "autoload-dev": {
+        "psr-4": {
+            "Azine\\SocialBarBundle\\Tests\\": "Tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

@@ -1,15 +1,17 @@
-parameters:
-
 services:
   azine.socialBarHelper:
-    class : Azine\SocialBarBundle\Templating\SocialBarHelper
-    tags :
-      - {name : 'templating.helper', alias : 'social-buttons'}
-    arguments : [ "@templating" ]
+    class: Azine\SocialBarBundle\Templating\SocialBarHelper
+    arguments: ['@twig']
     public: true
 
   twig.extension.azine_social_bar:
     class: Azine\SocialBarBundle\Templating\SocialBarTwigExtension
+    arguments:
+      - '@azine.socialBarHelper'
+      - '%azine_social_bar_fb_profile_url%'
+      - '%azine_social_bar_xing_profile_url%'
+      - '%azine_social_bar_linked_in_company_id%'
+      - '%azine_social_bar_google_plus_profile_url%'
+      - '%azine_social_bar_twitter_username%'
     tags:
-        - { name: 'twig.extension' }
-    arguments : [ "@service_container" ]
+      - { name: 'twig.extension' }

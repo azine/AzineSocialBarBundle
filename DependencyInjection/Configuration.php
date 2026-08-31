@@ -15,10 +15,10 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('azine_social_bar');
+        $treeBuilder = new TreeBuilder('azine_social_bar');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()

@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: "PHPUnit (PHP 8.5, deps: ${{ matrix.dependency-mode }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        dependency-mode: ['stable', 'lowest']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          extensions: mbstring, xml, ctype, iconv, json, tokenizer
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-publish
+
+      - name: Install dependencies (stable)
+        if: matrix.dependency-mode == 'stable'
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Install dependencies (lowest)
+        if: matrix.dependency-mode == 'lowest'
+        run: composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+
+      - name: Run test suite
+        run: vendor/bin/phpunit -c phpunit.xml.dist
