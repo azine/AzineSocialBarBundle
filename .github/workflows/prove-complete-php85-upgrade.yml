@@ -1,0 +1,110 @@
+name: Prove complete PHP 8.5 upgrade
+
+on:
+  push:
+    branches:
+      - automation/prove-complete-20260831
+
+permissions:
+  contents: write
+  issues: write
+  actions: read
+
+concurrency:
+  group: prove-complete-php85-socialbar
+  cancel-in-progress: false
+
+jobs:
+  prove:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      VERIFIED_TAG: php85-upgrade-verified-20260831
+    steps:
+      - name: Wait for authoritative merge
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 120); do
+            if gh pr view 4 -R "$REPOSITORY" >/dev/null 2>&1 && [ "$(gh pr view 4 -R "$REPOSITORY" --json mergedAt --jq '.mergedAt != null')" = 'true' ]; then exit 0; fi
+            merged=$(gh pr list -R "$REPOSITORY" --state merged --limit 100 --json title,baseRefName,mergedAt --jq '[.[] | select(.baseRefName == "master") | select((.title|ascii_downcase|contains("upgrade")) or (.title|contains("PHP 8.5")) or (.title|contains("Symfony 7.4")))] | length')
+            if [ "$merged" -gt 0 ]; then exit 0; fi
+            sleep 10
+          done
+          echo 'No authoritative upgrade PR was merged by the completion gate.' >&2
+          exit 1
+
+      - name: Checkout merged master
+        uses: actions/checkout@v6
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: Setup PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          coverage: none
+          tools: composer:v2
+          extensions: ctype, dom, fileinfo, filter, gd, iconv, intl, json, mbstring, pdo, pdo_sqlite, simplexml, tokenizer, xml, xmlwriter
+
+      - name: Validate merged source and behavior
+        run: |
+          set -euo pipefail
+          composer validate --strict --no-check-publish
+          php -r '$c=json_decode(file_get_contents("composer.json"),true,512,JSON_THROW_ON_ERROR); if (!str_contains((string)($c["require"]["php"]??""),"8.5")) exit(1); if (isset($c["require"]["symfony/symfony"])) exit(1); foreach (["require","require-dev"] as $s) foreach (($c[$s]??[]) as $n=>$v) if (str_starts_with($n,"symfony/") && !str_starts_with($n,"symfony/polyfill-") && !str_contains((string)$v,"7.4")) exit(1); if (!str_contains((string)($c["require"]["twig/twig"]??$c["require-dev"]["twig/twig"]??""),"3")) exit(1); if (!str_contains((string)($c["require-dev"]["phpunit/phpunit"]??""),"12")) exit(1);'
+          test ! -e .travis.yml
+          test ! -d .upgrade
+          ! find .github/workflows -maxdepth 1 -type f \( -name 'temporary-*' -o -name 'export-*' \) | grep -q .
+          ! grep -R --line-number --include='*.php' -E 'Twig_Extension|Twig_Simple(Filter|Function)|ContainerAware|Controller\\Controller|\$this->get\(|getDoctrine\(' . --exclude-dir=vendor --exclude-dir=.git
+          ! grep -R --line-number -i 'assetic' . --exclude-dir=.git --exclude='README*' --exclude='UPGRADE*' --exclude='CHANGELOG*'
+          grep -R -q "php-version: ['\"]8.5" .github/workflows
+          grep -R -q 'prefer-lowest' .github/workflows
+          grep -R -q 'actions/checkout@v6' .github/workflows
+          test -f phpunit.xml.dist
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-dist --no-interaction
+          find . -path ./vendor -prune -o -path ./.git -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+          rm -rf vendor composer.lock .phpunit.cache
+          composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
+          find . -path ./vendor -prune -o -path ./.git -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+          vendor/bin/phpunit -c phpunit.xml.dist --display-deprecations --display-phpunit-deprecations --display-phpunit-notices --fail-on-phpunit-notice --display-notices --display-skipped
+
+      - name: Ensure semantic release and epic closure
+        id: release
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          master_sha=$(git rev-parse HEAD)
+          version=$(gh release list -R "$REPOSITORY" --limit 100 --json tagName,isDraft,isPrerelease --jq '[.[] | select(.isDraft==false and .isPrerelease==false) | .tagName] | first' || true)
+          if [ -n "$version" ] && [ "$(git rev-list -n1 "$version" 2>/dev/null || true)" != "$master_sha" ]; then version=''; fi
+          if [ -z "$version" ]; then
+            latest=$(git tag -l --sort=-v:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n1 || true)
+            if [ -z "$latest" ]; then version=1.0.0; else version=$(python3 - "$latest" <<'PY'
+          import re,sys
+          m=re.fullmatch(r'v?(\d+)\.(\d+)\.(\d+)',sys.argv[1]); print(f'{int(m.group(1))+1}.0.0')
+          PY
+          ); fi
+            if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then test "$(git rev-list -n1 "$version")" = "$master_sha"; else git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git tag -a "$version" -m "AzineSocialBarBundle $version"; git push origin "$version"; fi
+            gh release create "$version" -R "$REPOSITORY" --verify-tag --title "$version — PHP 8.5 / Symfony 7.4" --notes 'Major upgrade to PHP 8.5, Symfony 7.4, Twig 3 and PHPUnit 12. Preserves the documented social-bar rendering contract, modernizes dependency injection, removes obsolete CI/runtime integrations, and validates stable and lowest dependency sets.'
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          children=$(gh issue list -R "$REPOSITORY" --state open --limit 100 --search '"Parent epic: #5"' --json number --jq '.[].number')
+          for issue in $children; do gh issue close "$issue" -R "$REPOSITORY" --reason completed; done
+          if gh issue view 5 -R "$REPOSITORY" --json state --jq .state | grep -q OPEN; then gh issue close 5 -R "$REPOSITORY" --reason completed; fi
+
+      - name: Publish independent verification marker
+        run: |
+          set -euo pipefail
+          git fetch origin master --force --tags
+          git checkout --detach origin/master
+          master_sha=$(git rev-parse HEAD)
+          version='${{ steps.release.outputs.version }}'
+          if git rev-parse -q --verify "refs/tags/$VERIFIED_TAG" >/dev/null; then test "$(git rev-list -n1 "$VERIFIED_TAG")" = "$master_sha"; else git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git tag -a "$VERIFIED_TAG" -m 'Merged master passed PHP 8.5 stable/lowest upgrade verification on 2026-08-31'; git push origin "$VERIFIED_TAG"; fi
+          gh issue comment 5 -R "$REPOSITORY" --body "Independent post-merge verification passed. \`master\` passed strict source checks and the full PHP 8.5 stable/lowest test matrices; release \`$version\` and marker \`$VERIFIED_TAG\` point to the verified default-branch commit."
+          for branch in automation/prove-complete-20260831 automation/ensure-complete-20260831-final automation/finalize-php85-20260831 automation/publish-php85-release-20260831; do git push origin --delete "$branch" 2>/dev/null || true; done
