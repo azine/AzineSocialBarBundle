@@ -2,7 +2,6 @@
     {% set url = app.request.uri %}
 {% endif %}
 
-{% spaceless %}
 <div class="social-button facebookButton">
 	{# initialize facebook SDK #}
 	<div id="fb-root"></div>
@@ -23,5 +22,3 @@
 		data-show-faces="{{showFaces}}"
 		></div>
 </div>
-
-{% endspaceless %}

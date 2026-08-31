@@ -2,7 +2,6 @@
     {% set url = app.request.uri %}
 {% endif %}
 
-{% spaceless %}
 <div class="social-button twitterButton">
 	<a	href="https://twitter.com/{{ action }}"
 		class="{{ actionClass }}"
@@ -11,14 +10,13 @@
 		data-lang="{{locale}}"
 		data-show-screen-name="false"
 
-	    {% if via is not sameas(false) %}
+	    {% if via is not same as(false) %}
 	    data-via="{{via}}"
 	    {% endif %}
 
-	    {% if tag is not sameas(false) %}
+	    {% if tag is not same as(false) %}
 	    data-hashtags="{{tag}}"
 	    {% endif %}
 		>{{text}}</a>
 		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
  </div>
-{% endspaceless %}

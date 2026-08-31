@@ -9,45 +9,45 @@ permissions:
 
 jobs:
   tests:
-    name: "PHPUnit (PHP 8.5, deps: ${{ matrix.dependency-mode }})"
+    name: "PHP 8.5 / dependencies ${{ matrix.dependency-mode }}"
     runs-on: ubuntu-latest
     timeout-minutes: 20
-
     strategy:
       fail-fast: false
       matrix:
         dependency-mode: ['stable', 'lowest']
-
+    env:
+      COMPOSER_NO_INTERACTION: '1'
+      COMPOSER_NO_AUDIT: '1'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
           coverage: none
           extensions: mbstring, xml, ctype, iconv, json, tokenizer
           tools: composer:v2
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v5
+      - run: composer validate --strict --no-check-publish
+      - uses: actions/cache@v5
         with:
           path: ~/.composer/cache/files
           key: ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-${{ hashFiles('composer.json') }}
-          restore-keys: |
-            ${{ runner.os }}-php85-${{ matrix.dependency-mode }}-
-
-      - name: Validate composer.json
-        run: composer validate --strict --no-check-publish
-
-      - name: Install dependencies (stable)
-        if: matrix.dependency-mode == 'stable'
-        run: composer update --prefer-dist --no-interaction
-
-      - name: Install dependencies (lowest)
-        if: matrix.dependency-mode == 'lowest'
-        run: composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction
-
-      - name: Run test suite
-        run: vendor/bin/phpunit -c phpunit.xml.dist
+      - if: matrix.dependency-mode == 'stable'
+        run: composer update --prefer-dist
+      - if: matrix.dependency-mode == 'lowest'
+        run: composer update --prefer-lowest --prefer-stable --prefer-dist
+      - name: Lint PHP
+        run: find DependencyInjection Templating Tests -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Test Twig 3 templates and bundle contracts
+        run: >-
+          vendor/bin/phpunit -c phpunit.xml.dist
+          --display-deprecations
+          --display-phpunit-deprecations
+          --display-phpunit-notices
+          --display-notices
+          --display-skipped
+          --fail-on-deprecation
+          --fail-on-phpunit-deprecation
+          --fail-on-phpunit-notice
+          --fail-on-notice
+          --fail-on-skipped
