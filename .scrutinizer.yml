@@ -8,6 +8,9 @@ tools:
         timeout: 1200 # Timeout 20min in seconds.
 
 build:
+    environment:
+        php:
+            version: '8.5.12'
     nodes:
         analysis:
             tests:

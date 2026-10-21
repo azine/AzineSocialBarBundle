@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   tests:
-    name: "PHP 8.5 / dependencies ${{ matrix.dependency-mode }}"
+    name: "PHP 8.5.12 / dependencies ${{ matrix.dependency-mode }}"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.5'
+          php-version: '8.5.12'
           coverage: none
           extensions: mbstring, xml, ctype, iconv, json, tokenizer
           tools: composer:v2

@@ -5,7 +5,7 @@ Symfony bundle to easily create a social bar in Twig templates.
 
 ## Requirements
 
-- PHP 8.5+
+- PHP 8.5.12+
 - Symfony components 7.4+
 - Twig 3+
 
