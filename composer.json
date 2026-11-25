@@ -20,7 +20,7 @@
         "php": "^8.5",
         "symfony/config": "^7.4.23",
         "symfony/dependency-injection": "^7.4",
-        "symfony/http-kernel": "^7.4.23",
+        "symfony/http-kernel": "^7.4.24",
         "symfony/twig-bundle": "^7.4",
         "twig/twig": "^3.31.1"
     },
